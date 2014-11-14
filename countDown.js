@@ -1,7 +1,7 @@
 	/*
-	time:2014/10/22
+	time:2014/11/14
 	author:NaN
-	content:
+	edit by chriswang
 
 	*/
 	function countDown(time){
@@ -13,7 +13,8 @@
 			day,
 			hour,
 			min,
-			sec;
+			sec,
+			formatDate;
 		var body=document.getElementsByTagName("body")[0];
 		var oDiv=document.createElement("div");
 			oDiv.id="box";
@@ -48,55 +49,37 @@
 			minBox=document.getElementById("min");
 			secBox=document.getElementById("sec");
 			//minsecBox=document.getElementById("minsec");
-			futureTime = (new Date(time)).getTime(); 
+			futureTime = +new Date(time); 
 			console.log(futureTime);
-			nowDate=new Date().getTime();
-			console.log(nowDate);
 
 			if(futureTime<nowDate){
 				alert("你输入的日期有错误");
 			}else{
-				countDowntime=futureTime-nowDate;
-				newTime=new Date(countDowntime);
-				//.log(countDowntime);
-				
+				formatDate = function(o) {
+					return ('' + o).length === 1 ? '0' + o : o;
+				}
 				setInterval(function(){
-					countDowntime=countDowntime-1000;
-					day=parseInt(countDowntime/1000/3600/24);
-					hour=parseInt((countDowntime-(day*24*3600*1000))/3600/1000);
-					min=parseInt((countDowntime-day*24*3600*1000-hour*3600*1000)/60/1000);
-					sec=parseInt((countDowntime-day*24*3600*1000-hour*3600*1000-min*60*1000)/1000);
-					
-					// console.log(day);
-					dayBox.innerHTML=parseInt(countDowntime/1000/3600/24)+"d";
+					// make lots of errors when -1000 because of single-thread js
+					// particularly in page which has lots of Interval 
+					nowDate = +new Date;
+					newTime = ~~( (futureTime - nowDate) / 1000 );
 
-					hourBox.innerHTML=parseInt((countDowntime-(day*24*3600*1000))/3600/1000)+"h";
-					minBox.innerHTML=parseInt((countDowntime-day*24*3600*1000-hour*3600*1000)/60/1000)+"min";
-					secBox.innerHTML=parseInt((countDowntime-day*24*3600*1000-hour*3600*1000-min*60*1000)/1000)+"s";
-					//minsecBox.innerHTML=parseInt(countDowntime-day*24*3600*1000-hour*3600*1000-min*60*1000-sec*1000)+"ms";
-					//document.write(countDowntime);
-					if(countDowntime<=0){
-						dayBox.innerHTML="00";
-						hourBox.innerHTML="00";
-						minBox.innerHTML="00";
-						secBox.innerHTML="00";
-						clearInterval();
-					}
+					sec     = formatDate( newTime % 60 );
+					newTime = ~~(newTime / 60);
 
-					if(day<9){
-						dayBox.innerHTML="0"+parseInt(countDowntime/1000/3600/24)+"d";
-							
-					}
-					if(hour<9){
-						hourBox.innerHTML="0"+parseInt((countDowntime-(day*24*3600*1000))/3600/1000)+"h";	
-					}
-					if(min<9){
-						minBox.innerHTML="0"+parseInt((countDowntime-day*24*3600*1000-hour*3600*1000)/60/1000)+"min";	
-					}
-					if(sec<9){
-						secBox.innerHTML="0"+parseInt((countDowntime-day*24*3600*1000-hour*3600*1000-min*60*1000)/1000)+"s";
-					}
-				},1000)
+					min     = formatDate( newTime % 60 );
+					newTime = ~~(newTime / 60);
+
+					hour    = newTime % 24;
+					newTime = ~~(newTime / 24);
+
+					day     = newTime;
+
+					dayBox.innerHTML = day + 'd  ';
+					hourBox.innerHTML = hour + ':';
+					minBox.innerHTML = min + ':';
+					secBox.innerHTML = sec;
+				}, 1000);
 				
 
 
